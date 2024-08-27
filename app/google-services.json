@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "14091850640",
+    "project_id": "hris-login-register",
+    "storage_bucket": "hris-login-register.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14091850640:android:62dc1410ee32989885d915",
+        "android_client_info": {
+          "package_name": "caps.android.hrismobileapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGl7jYpqvy-ZZD3PRoap3-8sZ3FacV9yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:14091850640:android:b66834263d38296485d915",
+        "android_client_info": {
+          "package_name": "caps.android.mobilehrisapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGl7jYpqvy-ZZD3PRoap3-8sZ3FacV9yw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
