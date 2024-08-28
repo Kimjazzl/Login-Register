@@ -1,5 +1,6 @@
 package caps.android.mobilehrisapp;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -7,6 +8,7 @@ import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
@@ -29,8 +31,14 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -38,8 +46,8 @@ public class RegisterActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private RadioGroup radioGroupRegisterGender;
     private RadioButton radioButtonRegisterGenderSelected;
-    private static final String TAG= "RegisterActivity";
-
+    private DatePickerDialog picker;
+    private static final String TAG = "RegisterActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +58,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         Toast.makeText(RegisterActivity.this, "You can register now", Toast.LENGTH_LONG).show();
 
+        progressBar = findViewById(R.id.progressBar);
         editTextRegisterFullName = findViewById(R.id.editText_register_full_name);
         editTextRegisterEmail = findViewById(R.id.editText_register_email);
         editTextRegisterDoB = findViewById(R.id.editText_register_dob);
@@ -60,7 +69,26 @@ public class RegisterActivity extends AppCompatActivity {
         radioGroupRegisterGender = findViewById(R.id.radio_group_register_gender);
         radioGroupRegisterGender.clearCheck();
 
-        Button buttonRegister = findViewById(R.id.button_register);
+        //datepicker
+        editTextRegisterDoB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final Calendar  calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+
+                picker = new DatePickerDialog(RegisterActivity.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        editTextRegisterDoB.setText(dayOfMonth + "/" + (month + 1) + "/" + year);
+                    }
+                }, year, month, day);
+                picker.show();
+            }
+        });
+
+                Button buttonRegister = findViewById(R.id.button_register);
         buttonRegister.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,6 +102,15 @@ public class RegisterActivity extends AppCompatActivity {
                 String textPwd = editTextRegisterPwd.getText().toString();
                 String textConfirmPwd =  editTextRegisterConfirmPwd.getText().toString();
                 String textGender;
+
+                //verify input number
+
+                String mobileRegex = "09[0-9]{9}";
+                Matcher mobileMatcher;
+                Pattern mobilePattern = Pattern.compile(mobileRegex);
+                mobileMatcher = mobilePattern.matcher(textMobile);
+
+
 
                 if (TextUtils.isEmpty(textFullName)) {
                     Toast.makeText(RegisterActivity.this, "Please enter your name", Toast.LENGTH_LONG).show();
@@ -102,6 +139,10 @@ public class RegisterActivity extends AppCompatActivity {
                 } else if (textMobile.length() != 11){
                     Toast.makeText(RegisterActivity.this, "Please re-enter your mobile no.", Toast.LENGTH_LONG).show();
                     editTextRegisterMobile.setError("Mobile number should 11 digits");
+                    editTextRegisterMobile.requestFocus();
+                } else if (!mobileMatcher.find()) {
+                    Toast.makeText(RegisterActivity.this, "Please re-enter your mobile no.", Toast.LENGTH_LONG).show();
+                    editTextRegisterMobile.setError("Mobile number is not valid");
                     editTextRegisterMobile.requestFocus();
                 } else if (TextUtils.isEmpty(textPwd)){
                     Toast.makeText(RegisterActivity.this, "Please enter your password", Toast.LENGTH_LONG).show();
@@ -132,8 +173,8 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void registerUser(String textFullName, String textEmail, String textDoB, String textGender, String textMobile, String textPwd) {
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        //create user profile
 
+        //create user profile
         auth.createUserWithEmailAndPassword(textEmail, textPwd).addOnCompleteListener(RegisterActivity.this,
                 new OnCompleteListener<AuthResult>() {
                     @Override
@@ -141,9 +182,11 @@ public class RegisterActivity extends AppCompatActivity {
                         if (task.isSuccessful()){
 
                             FirebaseUser firebaseUser = auth.getCurrentUser();
-
+                            //UPDATE DISPLAY NAME OF USER
+                            UserProfileChangeRequest profileChangeRequest = new UserProfileChangeRequest.Builder().setDisplayName(textFullName).build();
+                            firebaseUser.updateProfile(profileChangeRequest);
                             //Enter user Data into the Firebase realtime Database
-                            ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(textFullName, textDoB, textGender, textMobile);
+                            ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(textDoB, textGender, textMobile);
 
                             DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered User");
 
@@ -164,10 +207,8 @@ public class RegisterActivity extends AppCompatActivity {
                                     } else {
                                         Toast.makeText(RegisterActivity.this, "User Registered failed. Please verify your email", Toast.LENGTH_LONG).show();
 
-
                                     }
-
-
+                                    progressBar.setVisibility(View.GONE);
 
                                 }
                             });
@@ -180,14 +221,14 @@ public class RegisterActivity extends AppCompatActivity {
                                 editTextRegisterPwd.setError("Password too weak. Use a mix of letters, numbers, and special characters.");
                                 editTextRegisterPwd.requestFocus();
                             } catch (FirebaseAuthInvalidCredentialsException e) {
-                                editTextRegisterEmail.setError("Invalid email address. Re-enter.");
-                                editTextRegisterEmail.requestFocus();
-                            } catch (FirebaseAuthUserCollisionException e) {
                                 editTextRegisterEmail.setError("Email already registered. Use a different email.");
                                 editTextRegisterEmail.requestFocus();
+                            } catch (FirebaseAuthUserCollisionException e){
+                                editTextRegisterEmail.setError("User already registered with this email. Use a different email.");
+                                editTextRegisterEmail.requestFocus();
                             } catch (Exception e) {
-                                Log.e(TAG, "Registration failed: " + e.getMessage(), e);
-                                Toast.makeText(RegisterActivity.this, "Registration failed. Please try again later.", Toast.LENGTH_SHORT).show();
+                                Log.e(TAG, e.getMessage());
+                                Toast.makeText(RegisterActivity.this, e.getMessage(), Toast.LENGTH_LONG).show();
                             }
 
                             progressBar.setVisibility(View.GONE);

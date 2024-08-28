@@ -13,9 +13,13 @@
         android:theme="@style/Theme.MobileHrisApp"
         tools:targetApi="31">
         <activity
+            android:name=".LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity
             android:name=".RegisterActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

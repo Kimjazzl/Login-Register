@@ -1,6 +1,6 @@
 package caps.android.mobilehrisapp;
 
-import androidx.appcompat.widget.Toolbar;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -17,17 +17,13 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
         //set the title
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("MobileHRISApp");
-        }
-        /*/Open login activity
+        //getSupportActionBar().setTitle("Mobile Hris App");
+
+        //Open login activity
         Button buttonLogin = findViewById(R.id.button_login);
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -35,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, LoginActivity.class);
                 startActivity(intent);
             }
-        });*/
+        });
 
         //Open Register Activity
         Button buttonRegister = findViewById(R.id.button_register);
