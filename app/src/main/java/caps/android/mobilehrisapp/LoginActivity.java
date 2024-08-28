@@ -1,6 +1,7 @@
 package caps.android.mobilehrisapp;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -55,6 +56,15 @@ public class LoginActivity extends AppCompatActivity {
 
         authProfile = FirebaseAuth.getInstance();
 
+        //Reset Password
+        Button buttonForgotPassword = findViewById(R.id.button_forgot_password);
+        buttonForgotPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(LoginActivity.this, "You can reset your Password now!", Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
+            }
+        });
         //Show and hide password
         ImageView imageViewShowHidePwd = findViewById(R.id.imageView_show_hide_pwd);
         imageViewShowHidePwd.setImageResource(R.drawable.icon_hide_pwd);
@@ -101,7 +111,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginUser(String email, String pwd) {
-        authProfile.signInWithEmailAndPassword(email, pwd).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+        authProfile.signInWithEmailAndPassword(email, pwd).addOnCompleteListener(LoginActivity.this,new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
@@ -111,6 +121,12 @@ public class LoginActivity extends AppCompatActivity {
                     //verify email address
                     if (firebaseUser.isEmailVerified()){
                         Toast.makeText(LoginActivity.this, "You are now logged in", Toast.LENGTH_SHORT).show();
+                        //open user profile
+
+                        // start user profile activity
+                        startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
+                        finish();
+
                     } else {
                         firebaseUser.sendEmailVerification();
                         authProfile.signOut();
@@ -138,20 +154,24 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void showAlertDialog() {
+        //build alert dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(LoginActivity.this);
         builder.setTitle("Email not verified");
         builder.setMessage("Please verify your email now. You can not login without verification");
 
-        builder.setPositiveButton("Continue", (dialog, which) -> {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_APP_EMAIL);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // to email app
-            startActivity(intent);
+        builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                Intent intent = new Intent(Intent.ACTION_MAIN);
+                intent.addCategory(Intent.CATEGORY_APP_EMAIL);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // to email app
+                startActivity(intent);
+                    }
+                });
 
-        });
 
-        //create the alertdialog
-        AlertDialog alertDialog = builder.create();
+                //create the alertdialog
+                AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
     //check if user log in
@@ -159,8 +179,10 @@ public class LoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         if (authProfile.getCurrentUser() !=null){
-            Toast.makeText(LoginActivity.this, "You are already logged in", Toast.LENGTH_SHORT).show();
-            startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            Toast.makeText(LoginActivity.this, "Already logged in", Toast.LENGTH_SHORT).show();
+
+            // start user profile activity
+            startActivity(new Intent(LoginActivity.this, UserProfileActivity.class));
             finish();
         } else {
             Toast.makeText(LoginActivity.this, "You are not logged in", Toast.LENGTH_SHORT).show();

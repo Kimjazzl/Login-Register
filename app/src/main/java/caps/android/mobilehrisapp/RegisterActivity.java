@@ -197,12 +197,12 @@ public class RegisterActivity extends AppCompatActivity {
                                         firebaseUser.sendEmailVerification();
                                         Toast.makeText(RegisterActivity.this, "User Registered Successfully. Please verify your email", Toast.LENGTH_LONG).show();
 
-                            /*/to prevent user from returning on activity
+                            //to prevent user from returning on activity
 
                                         Intent intent = new Intent(RegisterActivity.this, UserProfileActivity.class);
                                         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                                         startActivity(intent);
-                                        finish();*/
+                                        finish();
 
                                     } else {
                                         Toast.makeText(RegisterActivity.this, "User Registered failed. Please verify your email", Toast.LENGTH_LONG).show();
