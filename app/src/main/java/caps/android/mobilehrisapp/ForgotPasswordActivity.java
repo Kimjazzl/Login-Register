@@ -47,6 +47,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
             public void onClick(View view) {
                 String email = editTextPwdResetEmail.getText().toString();
                 if (TextUtils.isEmpty(email)){
+                    Toast.makeText(ForgotPasswordActivity.this, "Please enter your registered email", Toast.LENGTH_SHORT).show();
                     editTextPwdResetEmail.setError("Please enter your email");
                     editTextPwdResetEmail.requestFocus();
                 } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()){
@@ -71,7 +72,7 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                             Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(ForgotPasswordActivity.this, MainActivity.class);
 
-                    //clear back stack to prevent  back to forgot password activity
+                    //clear back stack
                     intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(intent);
                     finish(); //close user profile activity
@@ -80,13 +81,15 @@ public class ForgotPasswordActivity extends AppCompatActivity {
                     try {
                         throw task.getException();
                     } catch (FirebaseAuthInvalidUserException e) {
-                        editTextPwdResetEmail.setError("Email does not exist or is invalid. Please try to register again.");
+                        editTextPwdResetEmail.setError("User does not exist or is no longer valid, please register again.");
                     } catch (Exception e) {
                         Log.e(TAG, e.getMessage());
                         Toast.makeText(ForgotPasswordActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
+
                 }
                 progressBar.setVisibility(View.GONE);
+
             }
         });
     }

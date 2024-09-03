@@ -5,56 +5,51 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ForgotPasswordActivity"
-    android:background="@color/light_gray">
-    
+    tools:context=".UploadProfilePicActivity">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="15dp"
         android:padding="15dp"
+        android:layout_margin="15dp"
         android:background="@color/white">
-
+        
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Please enter your registered email to receive the reset password link"
-            android:id="@+id/textView_password_reset_head"
-            android:layout_marginTop="30dp"
+            android:id="@+id/textView_upload_pic_head"
+            android:text="Upload Profile Picture"
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_password_reset_email"
-            android:layout_below="@+id/textView_password_reset_head"
-            android:text="Email*"
-            android:layout_marginTop="50dp"
-            android:textColor="#555555"
-            android:padding="6dp"
-            android:textSize="16sp" />
-
-        <EditText
-            android:id="@+id/edittext_password_reset_email"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/textView_password_reset_email"
-            android:background="@drawable/border"
-            android:hint="Enter your Email"
-            android:inputType="textEmailAddress"
-            android:padding="6dp"
-            android:textSize="16sp"
-            tools:ignore="TouchTargetSizeCheck" />
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button_password_reset"
-            android:layout_below="@+id/edittext_password_reset_email"
-            android:text="RESET PASSWORD"
-            android:layout_marginTop="50dp"
+            android:id="@+id/upload_pic_choose_button"
+            android:layout_below="@id/textView_upload_pic_head"
+            android:layout_marginTop="20dp"
+            android:text="Choose Image"
             android:layout_marginLeft="70dp"
-            android:layout_marginRight="70dp"/>
+            android:layout_marginRight="70dp"
+            android:background="@color/light_blue"/>
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="500dp"
+                android:id="@+id/imageView_Profile_pic"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/border"
+                android:layout_below="@id/upload_pic_choose_button"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/upload_pic_button"
+            android:layout_below="@id/imageView_Profile_pic"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="70dp"
+            android:layout_marginLeft="70dp"
+            android:text="Upload"
+            android:layout_marginBottom="50dp"/>
 
         <ProgressBar
             android:layout_width="wrap_content"
@@ -68,5 +63,6 @@
 
 
     </RelativeLayout>
+        
 
 </ScrollView>

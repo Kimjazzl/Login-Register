@@ -3,6 +3,7 @@ package caps.android.mobilehrisapp;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,6 +28,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Picasso;
 
 public class UserProfileActivity extends AppCompatActivity {
 
@@ -50,6 +52,19 @@ public class UserProfileActivity extends AppCompatActivity {
         textViewGender = findViewById(R.id.textView_show_gender);
         textViewMobile = findViewById(R.id.textView_show_mobile);
         progressBar = findViewById(R.id.progressBar);
+
+        //Imageview to open uploadprofilepic
+        imageView = findViewById(R.id.imageView_profile_dp);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(UserProfileActivity.this, UploadProfilePicActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+
 
         authProfile = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = authProfile.getCurrentUser();
@@ -113,6 +128,15 @@ public class UserProfileActivity extends AppCompatActivity {
                     textViewDoB.setText(dob);
                     textViewGender.setText(gender);
                     textViewMobile.setText(mobile);
+
+                    //set user dp
+                    Uri uri = firebaseUser.getPhotoUrl();
+
+                    //imageview setImageURI should not be used with regular url
+                    Picasso.get().load(uri).into(imageView);
+
+                } else {
+                    Toast.makeText(UserProfileActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                 }
                 progressBar.setVisibility(View.GONE);
             }
@@ -142,10 +166,10 @@ public class UserProfileActivity extends AppCompatActivity {
             startActivity(getIntent());
             finish();
             overridePendingTransition(0,0);
-        } /*else if (id == R.id.menu_update_profile){
+        } else if (id == R.id.menu_update_profile){
             Intent intent = new Intent(UserProfileActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
-        } else if (id == R.id.menu_update_email){
+        } /*else if (id == R.id.menu_update_email){
             Intent intent = new Intent(UserProfileActivity.this, UpdateEmailActivity.class);
             startActivity(intent);
         } else if (id == R.id.menu_settings){
