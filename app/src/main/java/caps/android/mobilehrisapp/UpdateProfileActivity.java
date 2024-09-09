@@ -1,32 +1,28 @@
 package caps.android.mobilehrisapp;
 
-import static caps.android.mobilehrisapp.R.id.radio_group_update_gender;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -37,9 +33,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.util.Calendar;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 
 public class UpdateProfileActivity extends AppCompatActivity {
 
@@ -62,7 +59,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         editTextUpdateDoB = findViewById(R.id.editText_update_profile_dob);
         editTextUpdateMobile = findViewById(R.id.editText_update_profile_mobile);
 
-        radioGroupUpdateGender = findViewById(radio_group_update_gender);
+        radioGroupUpdateGender = findViewById(R.id.radio_group_update_profile_gender);
 
         authProfile = FirebaseAuth.getInstance();
         FirebaseUser firebaseUser = authProfile.getCurrentUser();
@@ -71,7 +68,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         showProfile(firebaseUser);
 
         //upload profile pic
-        Button buttonUploadProfilePic = findViewById(R.id.button_upload_profile_pic);
+        Button buttonUploadProfilePic = findViewById(R.id.upload_pic_button);
         buttonUploadProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,7 +78,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             }
         });
         // Update email
-        Button buttonUpdateEmail = findViewById(R.id.button_profile_update_email);
+        Button buttonUpdateEmail = findViewById(R.id.button_update_email);
         buttonUpdateEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -171,7 +168,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(textDoB, textGender, textMobile);
 
             //extract user reference from datbase for registered user
-            DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered User" );
+            DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered Users" );
 
             String userID = firebaseUser.getUid();
             progressBar.setVisibility(View.VISIBLE);
@@ -214,7 +211,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
         String userIDofRegistered = firebaseUser.getUid();
 
         //extract user reference from database for registered user
-        DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered User");
+        DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered Users");
         progressBar.setVisibility(View.VISIBLE);
         referenceProfile.child(userIDofRegistered).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -276,15 +273,17 @@ public class UpdateProfileActivity extends AppCompatActivity {
             Intent intent = new Intent(UpdateProfileActivity.this, UpdateEmailActivity.class);
             startActivity(intent);
             finish();
-        } /*else if (id == R.id.menu_settings){
-            Toast.makeText(UserProfileActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.menu_settings){
+            Toast.makeText(UpdateProfileActivity.this, "Settings", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.menu_change_password){
-            Intent intent = new Intent(UserProfileActivity.this, ChangePasswordActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.menu_delete_profile){
-            Intent intent = new Intent(UserProfileActivity.this, DeleteProfileActivity.class);
+            Intent intent = new Intent(UpdateProfileActivity.this, DeleteProfileActivity.class);
             startActivity(intent);
-        } */else if (id == R.id.menu_logout){
+            finish();
+        } else if (id == R.id.menu_logout){
             authProfile.signOut();
             Toast.makeText(UpdateProfileActivity.this, "You are now logged out", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(UpdateProfileActivity.this, MainActivity.class);

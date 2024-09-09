@@ -55,7 +55,7 @@ public class UploadProfilePicActivity extends AppCompatActivity {
         Button buttonUploadPicChoose = findViewById(R.id.upload_pic_choose_button);
         Button buttonUploadPic = findViewById(R.id.upload_pic_button);
         progressBar = findViewById(R.id.progressBar);
-        imageViewUploadPic = findViewById(R.id.imageView_Profile_pic);
+        imageViewUploadPic = findViewById(R.id.imageView_profile_dp);
 
         authProfile = FirebaseAuth.getInstance();
         firebaseUser = authProfile.getCurrentUser();
@@ -172,15 +172,17 @@ public class UploadProfilePicActivity extends AppCompatActivity {
             Intent intent = new Intent(UploadProfilePicActivity.this, UpdateEmailActivity.class);
             startActivity(intent);
             finish();
-        } /*else if (id == R.id.menu_settings){
-            Toast.makeText(UserProfileActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.menu_settings){
+            Toast.makeText(UploadProfilePicActivity.this, "Settings", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.menu_change_password){
-            Intent intent = new Intent(UserProfileActivity.this, ChangePasswordActivity.class);
+            Intent intent = new Intent(UploadProfilePicActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
+            finish();
         } else if (id == R.id.menu_delete_profile){
-            Intent intent = new Intent(UserProfileActivity.this, DeleteProfileActivity.class);
+            Intent intent = new Intent(UploadProfilePicActivity.this, DeleteProfileActivity.class);
             startActivity(intent);
-        } */else if (id == R.id.menu_logout){
+            finish();
+        } else if (id == R.id.menu_logout){
             authProfile.signOut();
             Toast.makeText(UploadProfilePicActivity.this, "You are now logged out", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(UploadProfilePicActivity.this, MainActivity.class);

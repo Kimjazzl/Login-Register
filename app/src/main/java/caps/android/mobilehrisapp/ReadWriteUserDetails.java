@@ -1,17 +1,19 @@
 package caps.android.mobilehrisapp;
 
 public class ReadWriteUserDetails {
-    public String doB;
-    public String mobile;
-    public String gender;
+    public String doB, gender, mobile, registerDate;
 
-    //constructor
-    public ReadWriteUserDetails(){
+    //Constructor
+    public ReadWriteUserDetails(){};
 
+    public ReadWriteUserDetails(String textDoB, String textGender, String textMobile, String textRegisterDate){
+        this.doB = textDoB;
+        this.gender = textGender;
+        this.mobile = textMobile;
+        this.registerDate = textRegisterDate;
     }
 
     public ReadWriteUserDetails(String textDoB, String textGender, String textMobile){
-
         this.doB = textDoB;
         this.gender = textGender;
         this.mobile = textMobile;

@@ -2,61 +2,73 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:background="@color/light_gray">
+    android:background="@color/light_gray"
+    tools:context=".MainActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
-        android:padding="15dp"
-        android:background="@color/white">
-
+        android:background="@drawable/border"
+        android:padding="15dp">
 
         <ImageView
+            android:id="@+id/imageView_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/imageview_logo"
-            android:layout_marginTop="80dp"
-            app:srcCompat="@drawable/aps_logo"
-            android:maxWidth="180dp"
-            android:adjustViewBounds="true"
-            android:layout_centerHorizontal="true"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/textView_main_head"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp"
-            android:textColor="@color/black"
-            android:fontFamily="sans-serif-medium"
-            android:text="Welcome to Human resource information system Mobile app"
+            android:adjustViewBounds="true"
+            android:maxWidth="180dp"
+            app:srcCompat="@drawable/aps_logo"/>
+
+        <TextView
+            android:id="@+id/textView_app_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/imageView_logo"
+            android:text="Mobile HRIS App"
             android:textAlignment="center"
-            android:layout_below="@+id/imageview_logo"
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"/>
+            android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
 
-        <Button
+        <TextView
+            android:id="@+id/textView_main_head"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/textView_app_name"
+            android:layout_marginTop="6dp"
+            android:text="Welcome\nto\nMobile HRIS App"
+            android:textAlignment="center"
+            android:textAppearance="@style/TextAppearance.AppCompat.Menu" />
+
+        <Button
             android:id="@+id/button_login"
-            android:text="Login"
-            android:layout_marginTop="100dp"
-            android:layout_below="@+id/textView_main_head"
-            android:layout_marginLeft="70dp"
-            android:layout_marginRight="70dp"/>
-        <Button
+            android:layout_width="180dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_main_head"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="50dp"
+            android:text="Login" />
+
+        <TextView
+            android:id="@+id/textView_register"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/button_register"
-            android:text="Register"
-            android:layout_below="@+id/button_login"
-            android:layout_marginLeft="70dp"
-            android:layout_marginRight="70dp"/>
+            android:layout_below="@id/button_login"
+            android:layout_marginTop="30dp"
+            android:text="Do not have an account?"
+            android:textAlignment="center" />
 
-
-
+        <TextView
+            android:id="@+id/textView_register_link"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView_register"
+            android:text="register"
+            android:textColor="@color/dark_orchid"
+            android:textAlignment="center" />
 
     </RelativeLayout>
 
