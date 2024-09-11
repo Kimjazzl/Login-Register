@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">MyFirebaseApp</string>
+    <string name="app_name">Mobile HRIS App</string>
     <string name="welcome_head_profile">Welcome, %1$s!</string>
     <string name="profile_authenticated">Your profile has been authenticated (verified).</string>
     <string name="change_pwd_now"> You can change your password now.</string>

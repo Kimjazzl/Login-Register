@@ -46,13 +46,15 @@ public class UpdateProfileActivity extends AppCompatActivity {
     private String textFullName, textDoB, textMobile, textGender;
     private FirebaseAuth authProfile;
     private ProgressBar progressBar;
-
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_profile);
         getSupportActionBar().setTitle("Update Profile Details");
+
+        swipeToRefresh();
 
         progressBar = findViewById(R.id.progressBar);
         editTextUpdateName = findViewById(R.id.editText_update_profile_name);
@@ -67,9 +69,10 @@ public class UpdateProfileActivity extends AppCompatActivity {
         //show profile data
         showProfile(firebaseUser);
 
+
         //upload profile pic
-        Button buttonUploadProfilePic = findViewById(R.id.upload_pic_button);
-        buttonUploadProfilePic.setOnClickListener(new View.OnClickListener() {
+        TextView textViewUploadProfilePic = findViewById(R.id.textView_profile_upload_pic);
+        textViewUploadProfilePic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(UpdateProfileActivity.this, UploadProfilePicActivity.class);
@@ -78,8 +81,8 @@ public class UpdateProfileActivity extends AppCompatActivity {
             }
         });
         // Update email
-        Button buttonUpdateEmail = findViewById(R.id.button_update_email);
-        buttonUpdateEmail.setOnClickListener(new View.OnClickListener() {
+        TextView textViewUpdateEmail = findViewById(R.id.textView_profile_update_email);
+        textViewUpdateEmail.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(UpdateProfileActivity.this, UpdateEmailActivity.class);
@@ -119,6 +122,24 @@ public class UpdateProfileActivity extends AppCompatActivity {
                 updateProfile(firebaseUser);
             }
         });
+    }
+
+    private void swipeToRefresh() {
+        //Look up for the Swipe Container
+        swipeContainer = findViewById(R.id.swipeContainer);
+
+        //Setup Refresh Listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(() -> {
+            //Code to refresh goes here. Make sure to call swipeContainer.setRefreshing(false) once the refresh is complete
+            startActivity(getIntent());
+            finish();
+            overridePendingTransition(0, 0);
+            swipeContainer.setRefreshing(false);
+        });
+
+        //Configure refresh colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
+                android.R.color.holo_orange_light, android.R.color.holo_red_light);
     }
 
     private void updateProfile(FirebaseUser firebaseUser) {
@@ -167,7 +188,7 @@ public class UpdateProfileActivity extends AppCompatActivity {
             //enter user data into the firebase realtime database. set up dependencies
             ReadWriteUserDetails writeUserDetails = new ReadWriteUserDetails(textDoB, textGender, textMobile);
 
-            //extract user reference from datbase for registered user
+            //extract user reference from database for registered user
             DatabaseReference referenceProfile = FirebaseDatabase.getInstance().getReference("Registered Users" );
 
             String userID = firebaseUser.getUid();

@@ -17,9 +17,11 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.NavUtils;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -33,6 +35,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.Objects;
+
 public class UploadProfilePicActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
@@ -42,15 +46,17 @@ public class UploadProfilePicActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private static final int PICK_IMAGE_REQUEST = 1;
     private Uri uriImage;
-
+    private SwipeRefreshLayout swipeContainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_profile_pic);
 
-        getSupportActionBar().setTitle("Upload Profile Picture");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("Upload Profile Picture");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        swipeToRefresh();
 
         Button buttonUploadPicChoose = findViewById(R.id.upload_pic_choose_button);
         Button buttonUploadPic = findViewById(R.id.upload_pic_button);
@@ -60,29 +66,40 @@ public class UploadProfilePicActivity extends AppCompatActivity {
         authProfile = FirebaseAuth.getInstance();
         firebaseUser = authProfile.getCurrentUser();
 
-        storageReference = FirebaseStorage.getInstance().getReference("Display Photo");
+        storageReference = FirebaseStorage.getInstance().getReference("DisplayPics");
 
         Uri uri = firebaseUser.getPhotoUrl();
 
-        //if user Dp is upload already
-
+        //Set User's current DP in ImageView (if uploaded already). We will Picasso since imageViewer setImageURI() cannot be used with
+        //Regular URIs.
         Picasso.get().load(uri).into(imageViewUploadPic);
 
-        //choosing image to upload
-        buttonUploadPicChoose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                openFileChooser();
-            }
+        //Choosing image to upload
+        buttonUploadPicChoose.setOnClickListener(v -> openFileChooser());
+
+        //Upload Image
+        buttonUploadPic.setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+            UploadPic();
         });
-        //upload image
-        buttonUploadPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                progressBar.setVisibility(View.VISIBLE);
-                uploadPic();
-            }
+    }
+
+    private void swipeToRefresh() {
+        //Look up for the Swipe Container
+        swipeContainer = findViewById(R.id.swipeContainer);
+
+        //Setup Refresh Listener which triggers new data loading
+        swipeContainer.setOnRefreshListener(() -> {
+            //Code to refresh goes here. Make sure to call swipeContainer.setRefreshing(false) once the refresh is complete
+            startActivity(getIntent());
+            finish();
+            overridePendingTransition(0, 0);
+            swipeContainer.setRefreshing(false);
         });
+
+        //Configure refresh colors
+        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright, android.R.color.holo_green_light,
+                android.R.color.holo_orange_light, android.R.color.holo_red_light);
     }
 
     private void openFileChooser() {
@@ -91,108 +108,109 @@ public class UploadProfilePicActivity extends AppCompatActivity {
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null){
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
             uriImage = data.getData();
             imageViewUploadPic.setImageURI(uriImage);
         }
     }
 
+    private void UploadPic() {
+        if (uriImage != null) {
 
-    private void uploadPic(){
-        if (uriImage != null){
-            //Save the image with uid
-            StorageReference fileReference = storageReference.child(authProfile.getCurrentUser().getUid() + "."
-            + getFileExtension(uriImage));
+            //Save the image with uid of the currently logged user
+            StorageReference fileReference = storageReference.child(Objects.requireNonNull(authProfile.getCurrentUser()).getUid() + "/displaypic."
+                    + getFileExtension(uriImage));
 
-            // UPLOAD TO STORAGE
-            fileReference.putFile(uriImage).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    fileReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Uri downloadUri = uri;
-                            firebaseUser = authProfile.getCurrentUser();
+            //Upload image to Storage
+            fileReference.putFile(uriImage).addOnSuccessListener(taskSnapshot -> {
 
-                            // display image of the user after upload
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder().setPhotoUri(downloadUri).build();
-                            firebaseUser.updateProfile(profileUpdates);
+                fileReference.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                        }
-                    });
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(UploadProfilePicActivity.this, "Upload Successful", Toast.LENGTH_SHORT).show();
+                    firebaseUser = authProfile.getCurrentUser();
 
-                    Intent intent = new Intent(UploadProfilePicActivity.this, UserProfileActivity.class);
-                    startActivity(intent);
-                    finish();
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(UploadProfilePicActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
+                    //Finally set the display image of the user after upload
+                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                            .setPhotoUri(uri).build();
+                    firebaseUser.updateProfile(profileUpdates);
+                });
+
+                progressBar.setVisibility(View.GONE);
+                Toast.makeText(UploadProfilePicActivity.this, "Upload Successful!",
+                        Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(UploadProfilePicActivity.this, UserProfileActivity.class);
+                startActivity(intent);
+                finish();
+            }).addOnFailureListener(e -> Toast.makeText(UploadProfilePicActivity.this, e.getMessage(),
+                    Toast.LENGTH_SHORT).show());
         } else {
             progressBar.setVisibility(View.GONE);
-            Toast.makeText(UploadProfilePicActivity.this, "No file selected", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UploadProfilePicActivity.this, "No File Selected!",
+                    Toast.LENGTH_SHORT).show();
         }
     }
-    //Obtain file extension of the image
+
+    //Obtain File Extension of the image
     private String getFileExtension(Uri uri){
         ContentResolver cR = getContentResolver();
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
 
-    //Actionbar menu
+    //Creating ActionBar Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        //Inflate menu items
         getMenuInflater().inflate(R.menu.common_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
-    //when any menu is selected
+
+    //When any menu item is selected
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
 
-        if (id == R.id.menu_refresh){
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(UploadProfilePicActivity.this);
+        } else if (id == R.id.menu_refresh){
+            //Refresh Activity
             startActivity(getIntent());
             finish();
-            overridePendingTransition(0,0);
+            overridePendingTransition(0, 0);
         } else if (id == R.id.menu_update_profile){
-            Intent intent = new Intent(UploadProfilePicActivity.this, UpdateProfileActivity.class);
+            Intent intent = new Intent (UploadProfilePicActivity.this, UpdateProfileActivity.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.menu_update_email){
-            Intent intent = new Intent(UploadProfilePicActivity.this, UpdateEmailActivity.class);
+            Intent intent = new Intent (UploadProfilePicActivity.this, UpdateEmailActivity.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.menu_settings){
-            Toast.makeText(UploadProfilePicActivity.this, "Settings", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UploadProfilePicActivity.this, "menu_settings", Toast.LENGTH_SHORT).show();
         } else if (id == R.id.menu_change_password){
-            Intent intent = new Intent(UploadProfilePicActivity.this, ChangePasswordActivity.class);
+            Intent intent = new Intent (UploadProfilePicActivity.this, ChangePasswordActivity.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.menu_delete_profile){
-            Intent intent = new Intent(UploadProfilePicActivity.this, DeleteProfileActivity.class);
+            Intent intent = new Intent (UploadProfilePicActivity.this, DeleteProfileActivity.class);
             startActivity(intent);
             finish();
         } else if (id == R.id.menu_logout){
             authProfile.signOut();
-            Toast.makeText(UploadProfilePicActivity.this, "You are now logged out", Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(UploadProfilePicActivity.this, MainActivity.class);
+            Toast.makeText(UploadProfilePicActivity.this, "Logged Out", Toast.LENGTH_LONG).show();
+            Intent intent = new Intent (UploadProfilePicActivity.this, MainActivity.class);
 
-            //clear back stack
+            //Clear stack to prevent user coming back to UserProfileActivity on pressing back button after Logging out
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-            finish(); //close user profile activity
+            finish();   //Close UserProfileActivity
         } else {
-            Toast.makeText(UploadProfilePicActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
+            Toast.makeText(UploadProfilePicActivity.this, "Something went wrong!", Toast.LENGTH_LONG).show();
         }
 
         return super.onOptionsItemSelected(item);

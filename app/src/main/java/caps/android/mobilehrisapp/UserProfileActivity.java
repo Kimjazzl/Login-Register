@@ -43,7 +43,7 @@ public class UserProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_profile);
 
-        Objects.requireNonNull(getSupportActionBar()).setTitle("Home");
+        Objects.requireNonNull(getSupportActionBar()).setTitle("User Profile");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         swipeToRefresh();
@@ -79,6 +79,7 @@ public class UserProfileActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progress_bar);
         textViewRegisterDate = findViewById(R.id.textView_show_register_date);
         progressBarProfilePic = findViewById(R.id.progress_bar_profile_pic);
+
     }
 
     private void swipeToRefresh() {

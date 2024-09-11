@@ -192,8 +192,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="@string/register"
-                        android:textColor="@color/purple_700"
-                        android:textAlignment="center" />
+                        android:textAlignment="center"
+                        android:textColor="@color/purple_700" />
                 </LinearLayout>
 
                 <LinearLayout

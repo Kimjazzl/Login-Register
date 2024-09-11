@@ -145,7 +145,7 @@ public class RegisterActivity extends AppCompatActivity {
                 String textGender;          //Can't obtain the value before checking if any button was selected or not
 
                 //Validate Mobile Number using Regular Expression
-                String mobileRegex = "[6-9][0-9]{9}";
+                String mobileRegex = "09[0-9]{9}";
                 Matcher mobileMatcher;
                 Pattern mobilePattern = Pattern.compile(mobileRegex);
                 mobileMatcher = mobilePattern.matcher(textMobile);
@@ -174,9 +174,9 @@ public class RegisterActivity extends AppCompatActivity {
                     Toast.makeText(RegisterActivity.this, "Please enter mobile no.", Toast.LENGTH_SHORT).show();
                     editTextRegisterMobile.setError("Mobile No. is required!");
                     editTextRegisterMobile.requestFocus();
-                } else if (textMobile.length() != 10){
+                } else if (textMobile.length() != 11){
                     Toast.makeText(RegisterActivity.this, "Please re-enter mobile no.", Toast.LENGTH_SHORT).show();
-                    editTextRegisterMobile.setError("Mobile No. should be 10 digits!");
+                    editTextRegisterMobile.setError("Mobile No. should be 11 digits!");
                     editTextRegisterMobile.requestFocus();
                 } else if (!mobileMatcher.find()){
                     Toast.makeText(RegisterActivity.this, "Please re-enter mobile no.", Toast.LENGTH_SHORT).show();

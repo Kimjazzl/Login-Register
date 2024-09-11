@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/swipeContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ScrollView
+    <ScrollView xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/light_gray"
@@ -100,8 +98,7 @@
                         android:inputType="textPersonName"
                         android:padding="6dp"
                         android:textCursorDrawable="@drawable/edittextcursor"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck" />
+                        android:textSize="16sp" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -149,8 +146,7 @@
                         android:inputType="date"
                         android:padding="6dp"
                         android:textCursorDrawable="@drawable/edittextcursor"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+                        android:textSize="16sp" />
 
                     <ImageView
                         android:id="@+id/imageView_date_picker"
@@ -268,11 +264,9 @@
                         android:layout_toEndOf="@id/imageViewMobile"
                         android:background="@android:color/transparent"
                         android:inputType="phone"
-                        android:minHeight="48dp"
                         android:padding="6dp"
                         android:textCursorDrawable="@drawable/edittextcursor"
-                        android:textSize="16sp"
-                        tools:ignore="SpeakableTextPresentCheck" />
+                        android:textSize="16sp" />
                 </RelativeLayout>
 
                 <Button
@@ -293,7 +287,14 @@
                     android:layout_alignParentEnd="true"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="50dp"
-                    android:text="@string/upload_pic_u" />
+                    android:textSize="10dp"
+                    android:text="@string/upload_pic_u"
+                    android:textColor="@color/dark_orchid"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="uploadProfilePic" />
+
 
                 <TextView
                     android:id="@+id/textView_profile_update_email"
@@ -302,7 +303,14 @@
                     android:layout_below="@id/button_update_profile"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="50dp"
-                    android:text="@string/update_email_u" />
+                    android:textSize="10sp"
+                    android:text="@string/update_email_u"
+                    android:textColor="@color/dark_orchid"
+                    android:textStyle="bold"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:onClick="updateEmail" />
+
 
                 <ProgressBar
                     android:id="@+id/progressBar"

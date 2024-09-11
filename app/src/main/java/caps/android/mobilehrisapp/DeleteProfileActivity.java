@@ -197,6 +197,7 @@ public class DeleteProfileActivity extends AppCompatActivity {
         builder.setPositiveButton("Continue", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
                 deleteUserData(firebaseUser);
             }
         });
